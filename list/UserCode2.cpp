@@ -44,15 +44,10 @@ void addNode2Head(int data)
 void addNode2Tail(int data) 
 {
     Node* tmp = getNode(data);
-    Node* nxt = head;
-
-    while(nxt->next->next != nullptr){
-        nxt = nxt -> next;
-    }
-    tmp->prev = nxt;
-    tmp->next = nxt->next;
-    nxt->next = tmp;
-    tmp->next->prev = tmp;
+    tmp->next = &tail;
+    tail.prev->next = tmp;
+    tmp->prev = tail.prev;
+    tail.prev = tmp;
 }
 
 void addNode2Num(int data, int num) 
