@@ -5,20 +5,22 @@ using namespace std;
 int result;
 int n;
 int alist[6];
-int size;
+int size_;
 
 int makeNum(){
     int count = 1;
     int result = 0;
-    for(int i = size - 1; i >= 0; i--){
+    for(int i = size_ - 1; i >= 0; i--){
         result += (alist[i] * count);
         count *= 10;
     }
+    
     return result;
 }
 
-void change(int depth){
-    if(depth == n){
+void change(int depth, int now){
+    //printf("%d %d\n", depth, now);
+    if(depth == 0){
         int tmp = makeNum();
         if(result < tmp){
             result = tmp;
@@ -26,17 +28,44 @@ void change(int depth){
         return;
     }
 
-    for(int i = 0; i < size - 1; i++){
-        for(int j = 1; j < size; j++){
-            alist[i] ^= alist[j];
-            alist[j] ^= alist[i];
-            alist[i] ^= alist[j];
+    for(int i = now; i < size_; i++){
+        for(int j = i + 1; j < size_; j++){
+            if(alist[i] < alist[j]){
+                alist[i] ^= alist[j];
+                alist[j] ^= alist[i];
+                alist[i] ^= alist[j];
 
-            change(depth + 1);
+                change(depth - 1, i);
 
-            alist[i] ^= alist[j];
-            alist[j] ^= alist[i];
-            alist[i] ^= alist[j];
+                alist[i] ^= alist[j];
+                alist[j] ^= alist[i];
+                alist[i] ^= alist[j];
+            }
+        }
+    }
+
+    if(depth % 2 == 0){
+        int tmp = makeNum();
+        if(result < tmp){
+            result = tmp;
+        }
+    }
+    else{
+        for(int i = 0; i < size_; i++){
+            for(int j = i + 1; j < size_; j++){
+                alist[i] ^= alist[j];
+                alist[j] ^= alist[i];
+                alist[i] ^= alist[j];
+
+                int tmp = makeNum();
+                if(result < tmp){
+                    result = tmp;
+                }
+
+                alist[i] ^= alist[j];
+                alist[j] ^= alist[i];
+                alist[i] ^= alist[j];
+            }
         }
     }
 }
@@ -46,7 +75,7 @@ int main(int argc, char** argv)
 	int test_case;
 	int T;
 	
-	freopen("C:\\Users\\나\\Dropbox\\SWEA\\SWEA\\greedy_dp\\prize.txt", "r", stdin);
+	freopen("C:\\Users\\gns81\\Dropbox\\SWEA\\SWEA\\greedy_dp\\prize.txt", "r", stdin);
 	cin>>T;
 	/*
 	   여러 개의 테스트 케이스가 주어지므로, 각각을 처리합니다.
@@ -61,14 +90,14 @@ int main(int argc, char** argv)
             alist[j] = 0;
         }
 
-        size = 0;
+        size_ = 0;
         int b = a;
         while(b){
-            size++;
+            size_++;
             b /= 10;
         }
-
-        int i = size - 1;
+        
+        int i = size_ - 1;
         while(a){
             alist[i--] = a % 10;
             a /= 10;
@@ -78,7 +107,7 @@ int main(int argc, char** argv)
         // }
         // cout << '\n';
 
-        change(0);
+        change(n, 0);
 
         cout << '#' << test_case << ' '<< result << '\n';
 	}
