@@ -173,6 +173,8 @@ int fcfs(){
 
     track_no = del2head();
 
+    head_pos = track_no;
+
     int index = track_no >> DIV;
 
     int idx = 0;
@@ -194,13 +196,55 @@ int fcfs(){
     //printf("%d\n", total);
     remove(total);
 
-    printf("track_no %d ", track_no);
+    //printf("track_no %d ", track_no);
 
 	return track_no;
 }
 
 int sstf(){
 	int track_no = -1;	// TO DO : Need to be changed
+
+    int index = head_pos >> DIV;
+
+    int idx = 0;
+    int total = 0;
+    for(int i = 0; i < index; i++){
+        total += bucketCnt[i];
+    }
+
+    Node* tmp = &bucket[index];
+    while(tmp ->next != nullptr){
+        idx++;
+        if(tmp->next->val == track_no){
+            break;
+        }
+
+        tmp = tmp->next;
+    }
+    total += (idx - 1);
+
+    if(tmp->next->next != nullptr){
+        if((tmp->next->val - tmp->val) == (tmp->next->next->val - tmp->next->val)){
+            track_no = tmp->val;
+            total -= 1;
+            remove(total);
+        }
+        else{
+            if((tmp->next->val - tmp->val) > (tmp->next->next->val - tmp->next->val)){
+                track_no = tmp->val;
+                total -= 1;
+                remove(total);    
+            }
+            else{
+                track_no = tmp->next->next->val;
+                total += 1;
+                remove(total);
+            }
+        }
+    }
+
+    // printf("%d\n", total);
+    // remove(total);
 
 	return track_no;
 }

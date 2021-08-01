@@ -1,49 +1,134 @@
 #include <iostream>
 using namespace std;
 
-int memPoolCnt;
+int arr[] = {3, 2, 2, 1, 8, 1, 4, 5, 9, 1, 1, 1, 1, 1};
+int sorted[10];
 
-struct Node {
-	int value;
-	Node* prev;
-} node[50000];
+void merge(int left, int mid, int right){
+	int l = left;
+	int r = mid + 1;
+	int k = left;
 
-struct User {
-	Node* data;
-} user[100000];
+	while(l <= mid && r <= right){
+		if(arr[l] <= arr[r]){
+			sorted[k++] = arr[l++];
+		}
+		else{
+			sorted[k++] = arr[r++];
+		}
+	}
 
-int getSize(Node* data){
-    int count = 0;
-    while(data != nullptr){
-        data = data->prev;
-        count += 1;
-    }
-    return count;
+	if(l > mid){
+		while(r <= right)
+			sorted[k++] = arr[r++];
+	}
+	else
+		while(l <= mid)
+			sorted[k++] = arr[l++];
+
+	for(int i = left; i <= right; i++){
+		arr[i] = sorted[i];
+	}
+}
+
+void mergesort(int left, int right){
+	if(left < right){
+		int mid = (left + right) / 2;
+		mergesort(left, mid);
+		mergesort(mid + 1, right);
+		merge(left, mid, right);
+	}
+}
+
+void qsort(int left, int right){
+	int s = left;
+	int e = right;
+
+	int pivot = arr[(left + right) / 2];
+
+	if(left >= right) return;
+
+	while(s <= e){
+		while(arr[s] > pivot) s++;
+		while(arr[e] < pivot) e--;
+
+		if(s <= e){
+			// arr[s] ^= arr[e];
+			// arr[e] ^= arr[s];
+			// arr[s] ^= arr[e];
+			int tmp;
+			tmp = arr[s];
+			arr[s] = arr[e];
+			arr[e] = tmp;
+
+			s++; e--;
+		}
+	}
+	qsort(left, e);
+	qsort(s, right);
+}
+
+int binarysearch(int s, int e, int target){
+	int mid;
+	while(s <= e){
+		mid = (s + e) / 2;
+		// printf("%d %d %d\n", s, e, mid);
+		if(arr[mid] < target){
+			s = mid + 1;
+		}
+		else if(arr[mid] > target){
+			e = mid - 1;
+		}
+		else{
+			return mid;
+		}
+	}
+	return -1;
+}
+
+int binaryupper(int s, int e, int target){
+	int mid;
+	int ans = e;
+
+	while(s <= e){
+		mid = (s + e) / 2;
+		printf("%d %d %d\n", s, e, mid);
+		if(arr[mid] > target){
+			e = mid - 1;
+			ans = mid - 1;
+		}
+		else{
+			s = mid + 1;
+		}
+	}
+	return ans;
+}
+
+int binarylower(int s, int e, int target){
+	int mid;
+	int ans = s;
+
+	while(s <= e){
+		mid = (s + e) / 2;
+		if(arr[mid] >= target){
+			e = mid - 1;
+			ans = mid;
+		}
+		else{
+			s = mid + 1;
+		}
+	}
+	return ans;
 }
 
 int main() {
-	memPoolCnt = 0; //초기화
+	mergesort(0, 12);
+	//qsort(0, 12);
 	
-    if(user[0].data == nullptr){
-        cout << "yes" << endl;
-    }
+	for(int i = 0; i <= 12; i++) printf("%d ", arr[i]);
+	printf("\n");
 
-	// 첫 번째 데이터 추가
-	Node* tmp1 = &node[memPoolCnt++]; // 메모리 풀에서 가져옴
-	tmp1->value = 1;
-	tmp1->prev = user[0].data;
-	user[0].data = tmp1;
-
-    
-
-	// 두 번째 데이터 추가
-	Node* tmp2 = &node[memPoolCnt++]; // 메모리 풀에서 가져옴
-	tmp2->value = 2;
-	tmp2->prev = user[0].data;
-	user[0].data = tmp2;
-
-    int cnt = getSize(user[0].data);
-    cout << cnt << endl;
+	printf("%d %d %d", binarysearch(0, 12, 5), binarylower(0, 12, 1), binaryupper(0, 12, 1));
 
 	return 0;
 }
