@@ -122,8 +122,9 @@ int binarylower(int s, int e, int target){
 }
 
 int main() {
-	char x = '1';
-	cout << int(x) << '\n';
+	int x;
+	cin >> x;
+	cout << x << '\n';
 
 	mergesort(0, 12);
 	//qsort(0, 12);
